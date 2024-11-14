@@ -1,0 +1,206 @@
+<html>
+<head>
+<title>tileandmines.h</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #d55fde; font-style: italic;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #5c6370; font-style: italic;}
+.s3 { color: #89ca78;}
+.s4 { color: #d19a66;}
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+tileandmines.h</font>
+</center></td></tr></table>
+<pre><span class="s0">#ifndef </span><span class="s1">MINESWEEPER_TILEANDMINES_H</span>
+<span class="s0">#define </span><span class="s1">MINESWEEPER_TILEANDMINES_H</span>
+<span class="s0">#endif </span><span class="s2">//MINESWEEPER_TILEANDMINES_H</span>
+<span class="s0">using namespace </span><span class="s1">std;</span>
+<span class="s0">#include </span><span class="s3">&lt;iostream&gt;</span>
+<span class="s0">#include </span><span class="s3">&lt;map&gt;</span>
+<span class="s0">#include </span><span class="s3">&lt;vector&gt;</span>
+<span class="s0">#include </span><span class="s3">&lt;time.h&gt;</span>
+
+<span class="s0">class </span><span class="s1">Textures{</span>
+<span class="s0">public</span><span class="s1">:</span>
+
+<span class="s1">};</span>
+
+<span class="s0">class </span><span class="s1">Tile{</span>
+<span class="s0">public</span><span class="s1">:</span>
+    <span class="s0">bool </span><span class="s1">is_mine;</span>
+    <span class="s0">int </span><span class="s1">neighbor_mines;</span>
+    <span class="s0">bool </span><span class="s1">is_revealed;</span>
+    <span class="s0">bool </span><span class="s1">is_flagged;</span>
+
+
+    <span class="s0">void </span><span class="s1">loadtextures(){</span>
+        <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;LOADED&quot; </span><span class="s1">&lt;&lt; endl;</span>
+    <span class="s1">}</span>
+
+
+<span class="s1">};</span>
+
+<span class="s2">//recursion to test if adjecent mines are cleared</span>
+<span class="s0">void </span><span class="s1">revealAdjacentTiles(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, std::vector&lt;std::vector&lt;Tile&gt;&gt; &amp;gameBoard, </span><span class="s0">int </span><span class="s1">numRows, </span><span class="s0">int </span><span class="s1">numCols) {</span>
+    <span class="s2">// Base case: If the current tile is a mine or has already been revealed, return or if flagged dont reveal</span>
+    <span class="s0">if</span><span class="s1">(gameBoard[row][col].is_flagged){</span>
+        <span class="s0">return</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s0">if </span><span class="s1">(row &lt; </span><span class="s4">0 </span><span class="s1">|| row &gt;= numRows || col &lt; </span><span class="s4">0 </span><span class="s1">|| col &gt;= numCols || gameBoard[row][col].is_mine || gameBoard[row][col].is_revealed) {</span>
+        <span class="s1">gameBoard[row][col].is_revealed = </span><span class="s0">true</span><span class="s1">;</span>
+        <span class="s0">return</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+    <span class="s2">// Set the current tile as revealed</span>
+    <span class="s1">gameBoard[row][col].is_revealed = </span><span class="s0">true</span><span class="s1">;</span>
+
+    <span class="s2">// If the current tile has no neighboring mines, recursively reveal adjacent tiles</span>
+    <span class="s0">if</span><span class="s1">(gameBoard[row][col].neighbor_mines == </span><span class="s4">0</span><span class="s1">){</span>
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">row_off = -</span><span class="s4">1</span><span class="s1">; row_off &lt;= </span><span class="s4">1</span><span class="s1">; ++row_off) {</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">col_off = -</span><span class="s4">1</span><span class="s1">; col_off &lt;= </span><span class="s4">1</span><span class="s1">; ++col_off) {</span>
+            <span class="s0">int </span><span class="s1">neighrow = row + row_off;</span>
+            <span class="s0">int </span><span class="s1">neighcol = col + col_off;</span>
+            <span class="s0">if </span><span class="s1">(neighrow &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp; neighrow &lt; numRows &amp;&amp; neighcol &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp; neighcol &lt; numCols) {</span>
+                <span class="s1">revealAdjacentTiles(neighrow, neighcol, gameBoard, numRows, numCols);</span>
+                 <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+
+
+
+<span class="s0">int </span><span class="s1">random_num_gen(</span><span class="s0">int </span><span class="s1">lowerbound, </span><span class="s0">int </span><span class="s1">upperbound, </span><span class="s0">int </span><span class="s1">seeder){</span>
+    <span class="s1">srand(time(</span><span class="s4">0</span><span class="s1">) + seeder);</span>
+    <span class="s0">int </span><span class="s1">random_number = (rand() % (upperbound - lowerbound)) + lowerbound;</span>
+    <span class="s0">return </span><span class="s1">random_number;</span>
+<span class="s1">}</span>
+
+
+
+
+<span class="s1">vector&lt;vector&lt;Tile&gt;&gt; initialize(</span><span class="s0">int </span><span class="s1">cols, </span><span class="s0">int </span><span class="s1">rows, </span><span class="s0">int </span><span class="s1">num_mines){</span>
+    <span class="s1">vector&lt;vector&lt;Tile&gt;&gt; gameBoard(rows, std::vector&lt;Tile&gt;(cols));</span>
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">cur_row = </span><span class="s4">0</span><span class="s1">; cur_row &lt; rows; ++cur_row) {</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">cur_col = </span><span class="s4">0</span><span class="s1">; cur_col &lt; cols; ++cur_col) {</span>
+            <span class="s1">gameBoard[cur_row][cur_col].is_mine = </span><span class="s0">false</span><span class="s1">;</span>
+            <span class="s1">gameBoard[cur_row][cur_col].neighbor_mines = </span><span class="s4">0</span><span class="s1">;</span>
+            <span class="s1">gameBoard[cur_row][cur_col].is_revealed = </span><span class="s0">false</span><span class="s1">;</span>
+            <span class="s1">gameBoard[cur_row][cur_col].is_flagged = </span><span class="s0">false</span><span class="s1">;</span>
+            <span class="s2">//gameBoard[cur_row][cur_col].loadtextures();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s2">//now we place the mines randomly</span>
+    <span class="s0">int </span><span class="s1">randomizer = </span><span class="s4">0</span><span class="s1">;</span>
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; num_mines;) {</span>
+        <span class="s0">int </span><span class="s1">rowy = random_num_gen(</span><span class="s4">0</span><span class="s1">, rows, randomizer + i);</span>
+        <span class="s0">int </span><span class="s1">colx = random_num_gen(</span><span class="s4">0</span><span class="s1">, cols, randomizer * i);</span>
+        <span class="s0">if </span><span class="s1">(!gameBoard[rowy][colx].is_mine) {</span>
+            <span class="s1">gameBoard[rowy][colx].is_mine = </span><span class="s0">true</span><span class="s1">;</span>
+            <span class="s1">i++;</span>
+            <span class="s1">randomizer++;</span>
+            <span class="s1">cout &lt;&lt; </span><span class="s3">&quot; col: &quot; </span><span class="s1">&lt;&lt; colx &lt;&lt; </span><span class="s3">&quot; row: &quot; </span><span class="s1">&lt;&lt; rowy &lt;&lt; endl;</span>
+
+        <span class="s1">}</span>
+        <span class="s2">//cout &lt;&lt; &quot;RANDOMIZER CLUTCH!!!&quot; &lt;&lt; endl;</span>
+        <span class="s1">randomizer++;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">cur_row = </span><span class="s4">0</span><span class="s1">; cur_row &lt; rows; ++cur_row) {</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">cur_col = </span><span class="s4">0</span><span class="s1">; cur_col &lt; cols; ++cur_col) {</span>
+            <span class="s0">if</span><span class="s1">(!gameBoard[cur_row][cur_col].is_mine){</span>
+                <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">row_off = -</span><span class="s4">1</span><span class="s1">; row_off &lt;= </span><span class="s4">1</span><span class="s1">; row_off++) {</span>
+                    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">col_off = -</span><span class="s4">1</span><span class="s1">; col_off &lt;= </span><span class="s4">1</span><span class="s1">; col_off++) {</span>
+                        <span class="s0">int </span><span class="s1">neighrow = cur_row + row_off;</span>
+                        <span class="s0">int </span><span class="s1">neighcol = cur_col + col_off;</span>
+                        <span class="s0">if</span><span class="s1">(neighrow &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp; neighrow &lt; rows &amp;&amp; neighcol &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp; neighcol &lt; cols &amp;&amp; gameBoard[neighrow][neighcol].is_mine){</span>
+                            <span class="s1">gameBoard[cur_row][cur_col].neighbor_mines++;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">return </span><span class="s1">gameBoard;</span>
+<span class="s1">}</span>
+
+
+<span class="s0">void </span><span class="s1">printer(vector&lt;vector&lt;Tile&gt;&gt; myboard, </span><span class="s0">int </span><span class="s1">cols, </span><span class="s0">int </span><span class="s1">rows){</span>
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; rows; i++){</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; cols; j++){</span>
+            <span class="s0">if</span><span class="s1">(myboard[i][j].is_mine){</span>
+                <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;X &quot;</span><span class="s1">;</span>
+            <span class="s1">} </span><span class="s0">else</span><span class="s1">{</span>
+                <span class="s1">cout &lt;&lt; myboard[i][j].neighbor_mines &lt;&lt; </span><span class="s3">&quot; &quot;</span><span class="s1">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s1">cout &lt;&lt; endl;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s0">bool </span><span class="s1">wincheck(vector&lt;vector&lt;Tile&gt;&gt; myboard, </span><span class="s0">int </span><span class="s1">cols, </span><span class="s0">int </span><span class="s1">rows, </span><span class="s0">int </span><span class="s1">number_ofmines, </span><span class="s0">int </span><span class="s1">flagsss){</span>
+
+    <span class="s0">int </span><span class="s1">revealed_nonmines = </span><span class="s4">0</span><span class="s1">;</span>
+    <span class="s2">//check every mine that is revealed and is non mine add one</span>
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; rows; i++){</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; cols; j++) {</span>
+            <span class="s0">if </span><span class="s1">(myboard[i][j].is_revealed &amp;&amp; !myboard[i][j].is_mine) {</span>
+                <span class="s1">revealed_nonmines++;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s2">//returns true if all non mine tiles are revealed</span>
+    <span class="s0">if</span><span class="s1">(revealed_nonmines == (rows * cols) - number_ofmines){</span>
+        <span class="s2">//sets all mines to flagged? Idk why the pdf said to do this</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; rows; i++){</span>
+            <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; cols; j++) {</span>
+                <span class="s0">if</span><span class="s1">(myboard[i][j].is_mine) {</span>
+                    <span class="s1">myboard[i][j].is_flagged = </span><span class="s0">true</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return true</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">if</span><span class="s1">(flagsss != </span><span class="s4">0</span><span class="s1">){</span>
+        <span class="s0">return false</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s0">int </span><span class="s1">counter = </span><span class="s4">0</span><span class="s1">;</span>
+    <span class="s2">//ensures that there are no flagged regular tiles</span>
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; rows; i++){</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; cols; j++){</span>
+            <span class="s0">if</span><span class="s1">(myboard[i][j].is_flagged &amp;&amp; !myboard[i][j].is_mine){</span>
+                <span class="s0">return false</span><span class="s1">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s2">//ensures all mines are flagged</span>
+    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; rows; i++){</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; cols; j++){</span>
+            <span class="s0">if</span><span class="s1">(myboard[i][j].is_mine &amp;&amp; myboard[i][j].is_flagged){</span>
+                <span class="s1">counter++;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s0">if</span><span class="s1">(counter == number_ofmines){</span>
+        <span class="s0">return true</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">return false</span><span class="s1">;</span>
+<span class="s1">}</span>
+
+
+</pre>
+</body>
+</html>

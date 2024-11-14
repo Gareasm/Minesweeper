@@ -1,0 +1,160 @@
+<html>
+<head>
+<title>main.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #d55fde; font-style: italic;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #89ca78;}
+.s3 { color: #d19a66;}
+.s4 { color: #5c6370; font-style: italic;}
+.s5 { color: #2bbac5;}
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.cpp</font>
+</center></td></tr></table>
+<pre><span class="s0">#include </span><span class="s2">&lt;iostream&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;SFML/Graphics.hpp&gt;</span>
+<span class="s0">using namespace </span><span class="s1">std;</span>
+<span class="s0">#include </span><span class="s2">&quot;functions.h&quot;</span>
+
+<span class="s0">#include </span><span class="s2">&lt;map&gt;</span>
+
+<span class="s0">int </span><span class="s1">main() {</span>
+
+    <span class="s1">map&lt;string, </span><span class="s0">int</span><span class="s1">&gt; config = config_check();</span>
+    <span class="s0">int </span><span class="s1">width = config[</span><span class="s2">&quot;width&quot;</span><span class="s1">] * </span><span class="s3">32</span><span class="s1">;</span>
+    <span class="s0">int </span><span class="s1">height = </span><span class="s3">100 </span><span class="s1">+ (config[</span><span class="s2">&quot;height&quot;</span><span class="s1">] * </span><span class="s3">32</span><span class="s1">);</span>
+    <span class="s0">int </span><span class="s1">mine_count = config[</span><span class="s2">&quot;mines&quot;</span><span class="s1">];</span>
+
+
+
+    <span class="s1">sf::RenderWindow window(sf::VideoMode(width, height), </span><span class="s2">&quot;Welcome Window&quot;</span><span class="s1">, sf::Style::Close);</span>
+    <span class="s1">sf::Font MyFont;</span>
+    <span class="s0">if </span><span class="s1">(!MyFont.loadFromFile(</span><span class="s2">&quot;font.ttf&quot;</span><span class="s1">)) {</span>
+        <span class="s4">// Error handling</span>
+        <span class="s0">return </span><span class="s1">EXIT_FAILURE;</span>
+    <span class="s1">}</span>
+    <span class="s1">sf::Clock myClock;</span>
+    <span class="s1">string name;</span>
+    <span class="s0">int </span><span class="s1">showCursor = </span><span class="s3">0</span><span class="s1">;</span>
+    <span class="s0">bool </span><span class="s1">keyPressed = </span><span class="s0">false</span><span class="s1">;</span>
+    <span class="s4">//Setting up text</span>
+    <span class="s1">string welcome = </span><span class="s2">&quot;WELCOME TO MINESWEEPER!&quot;</span><span class="s1">;</span>
+    <span class="s1">sf::Text text;</span>
+    <span class="s1">text.setString(welcome);</span>
+    <span class="s1">text.setFont(MyFont);</span>
+    <span class="s1">text.setCharacterSize(</span><span class="s3">24</span><span class="s1">);</span>
+    <span class="s1">text.setFillColor(sf::Color::White);</span>
+    <span class="s1">text.setStyle(sf::Text::Bold | sf::Text::Underlined);</span>
+    <span class="s1">setText(text, width/</span><span class="s3">2 </span><span class="s1">, (height/</span><span class="s3">2</span><span class="s1">) - </span><span class="s3">150</span><span class="s1">);</span>
+
+    <span class="s1">string enter = </span><span class="s2">&quot;Enter your name:&quot;</span><span class="s1">;</span>
+    <span class="s1">sf::Text belowText;</span>
+    <span class="s1">belowText.setString(enter);</span>
+    <span class="s1">belowText.setFont(MyFont);</span>
+    <span class="s1">belowText.setCharacterSize(</span><span class="s3">20</span><span class="s1">);</span>
+    <span class="s1">belowText.setFillColor(sf::Color::White);</span>
+    <span class="s1">belowText.setStyle(sf::Text::Bold);</span>
+    <span class="s1">setText(belowText, width/</span><span class="s3">2</span><span class="s1">, (height/</span><span class="s3">2</span><span class="s1">) - </span><span class="s3">75</span><span class="s1">);</span>
+
+    <span class="s1">sf::Text inputText;</span>
+    <span class="s1">inputText.setFont(MyFont);</span>
+    <span class="s1">inputText.setCharacterSize(</span><span class="s3">18</span><span class="s1">);</span>
+    <span class="s1">inputText.setFillColor(sf::Color::Yellow);</span>
+    <span class="s1">inputText.setStyle(sf::Text::Bold);</span>
+    <span class="s1">setText(inputText, width/</span><span class="s3">2</span><span class="s1">, (height/</span><span class="s3">2</span><span class="s1">) - </span><span class="s3">45</span><span class="s1">);</span>
+
+      <span class="s1">sf::Clock cursorClock;</span>
+        <span class="s0">bool </span><span class="s1">cursorVisible = </span><span class="s0">true</span><span class="s1">;</span>
+        <span class="s1">sf::RectangleShape cursor(sf::Vector2f(</span><span class="s3">1.f</span><span class="s1">, </span><span class="s0">static_cast</span><span class="s1">&lt;</span><span class="s0">float</span><span class="s1">&gt;(inputText.getCharacterSize())));</span>
+        <span class="s1">cursor.setFillColor(sf::Color::White);</span>
+
+    <span class="s1">string userInput;</span>
+    <span class="s1">string unfliteredName;</span>
+    <span class="s0">bool </span><span class="s1">forced_close;</span>
+
+    <span class="s0">while</span><span class="s1">(window.isOpen()) {</span>
+
+        <span class="s1">sf::Event event;</span>
+        <span class="s0">while </span><span class="s1">(window.pollEvent(event)) {</span>
+            <span class="s0">if </span><span class="s1">(event.type == sf::Event::Closed) {</span>
+                <span class="s1">window.close();</span>
+                <span class="s1">forced_close = </span><span class="s0">true</span><span class="s1">;</span>
+            <span class="s1">}</span>
+            <span class="s0">else if </span><span class="s1">(event.type == sf::Event::TextEntered) {</span>
+                <span class="s0">if </span><span class="s1">(std::isprint(</span><span class="s0">static_cast</span><span class="s1">&lt;</span><span class="s0">char</span><span class="s1">&gt;(event.text.unicode))) {</span>
+                    <span class="s1">userInput += </span><span class="s0">static_cast</span><span class="s1">&lt;</span><span class="s0">char</span><span class="s1">&gt;(event.text.unicode);</span>
+                   <span class="s1">userInput = NameFixer(userInput);</span>
+                <span class="s1">} </span><span class="s0">else if </span><span class="s1">(event.text.unicode == </span><span class="s2">'</span><span class="s5">\b</span><span class="s2">' </span><span class="s1">&amp;&amp; !userInput.empty()) {</span>
+                    <span class="s1">userInput.pop_back();</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {</span>
+                <span class="s1">string final_name = removeCursor(userInput);</span>
+                <span class="s0">if </span><span class="s1">(event.key.code == sf::Keyboard::Enter &amp;&amp; (!final_name.empty())) {</span>
+                    <span class="s1">name = final_name;</span>
+                    <span class="s1">forced_close = </span><span class="s0">false</span><span class="s1">;</span>
+                    <span class="s1">window.close();</span>
+
+                <span class="s1">}</span>
+
+            <span class="s1">}</span>
+
+        <span class="s1">}</span>
+        <span class="s0">if </span><span class="s1">(cursorClock.getElapsedTime().asSeconds() &gt;= </span><span class="s3">0.5f</span><span class="s1">) {</span>
+            <span class="s1">cursor.setPosition(inputText.findCharacterPos(userInput.size()).x, (height/</span><span class="s3">2</span><span class="s1">) - </span><span class="s3">55</span><span class="s1">);</span>
+            <span class="s1">cursorVisible = !cursorVisible;</span>
+            <span class="s1">cursorClock.restart();</span>
+        <span class="s1">}</span>
+        <span class="s1">window.clear(sf::Color(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, </span><span class="s3">255</span><span class="s1">));</span>
+        <span class="s0">if </span><span class="s1">(cursorVisible) {</span>
+            <span class="s1">cursor.setPosition(inputText.findCharacterPos(userInput.size()).x, (height/</span><span class="s3">2</span><span class="s1">) - </span><span class="s3">55</span><span class="s1">);</span>
+            <span class="s1">window.draw(cursor);</span>
+        <span class="s1">}</span>
+        <span class="s1">inputText.setString(userInput);</span>
+
+
+
+
+
+
+
+
+
+
+
+        <span class="s1">window.draw(text);</span>
+        <span class="s1">window.draw(belowText);</span>
+        <span class="s1">setText(inputText, width/</span><span class="s3">2</span><span class="s1">, (height/</span><span class="s3">2</span><span class="s1">) - </span><span class="s3">45</span><span class="s1">);</span>
+        <span class="s1">window.draw(inputText);</span>
+
+
+
+
+        <span class="s1">window.display();</span>
+
+
+    <span class="s1">}</span>
+
+
+
+
+    <span class="s0">if </span><span class="s1">(!forced_close) {</span>
+        <span class="s1">game_window test;</span>
+        <span class="s1">test.sprite_loader();</span>
+        <span class="s1">test.renderwindow(config[</span><span class="s2">&quot;width&quot;</span><span class="s1">], config[</span><span class="s2">&quot;height&quot;</span><span class="s1">], config[</span><span class="s2">&quot;mines&quot;</span><span class="s1">], name);</span>
+        <span class="s1">cout &lt;&lt; </span><span class="s2">&quot;Exit: Game Window&quot; </span><span class="s1">&lt;&lt; endl;</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span>
+
+
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,854 @@
+<html>
+<head>
+<title>functions.h</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #5c6370; font-style: italic;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #d55fde; font-style: italic;}
+.s3 { color: #89ca78;}
+.s4 { color: #d19a66;}
+.s5 { color: #2bbac5;}
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+functions.h</font>
+</center></td></tr></table>
+<pre><span class="s0">//</span>
+<span class="s0">// Created by Gabriel on 4/15/2024.</span>
+<span class="s0">//</span>
+
+<span class="s2">#ifndef </span><span class="s1">MINESWEEPER_FUNCTIONS_H</span>
+<span class="s2">#define </span><span class="s1">MINESWEEPER_FUNCTIONS_H</span>
+
+<span class="s2">#endif </span><span class="s0">//MINESWEEPER_FUNCTIONS_H</span>
+
+<span class="s2">using namespace </span><span class="s1">std;</span>
+<span class="s2">#include </span><span class="s3">&lt;iostream&gt;</span>
+<span class="s2">#include </span><span class="s3">&lt;fstream&gt;</span>
+<span class="s2">#include </span><span class="s3">&lt;map&gt;</span>
+<span class="s2">#include </span><span class="s3">&lt;sstream&gt;</span>
+<span class="s2">#include </span><span class="s3">&lt;vector&gt;</span>
+<span class="s2">#include </span><span class="s3">&lt;chrono&gt;</span>
+<span class="s2">#include </span><span class="s3">&quot;tileandmines.h&quot;</span>
+<span class="s2">#include </span><span class="s3">&lt;iomanip&gt;</span>
+
+
+<span class="s1">string NameFixer(string input){</span>
+    <span class="s1">string fixedString;</span>
+    <span class="s2">bool </span><span class="s1">isFirst = </span><span class="s2">true</span><span class="s1">;</span>
+    <span class="s2">int </span><span class="s1">count = </span><span class="s4">0</span><span class="s1">;</span>
+    <span class="s2">for </span><span class="s1">(</span><span class="s2">char </span><span class="s1">c : input) {</span>
+        <span class="s1">count++;</span>
+        <span class="s2">if </span><span class="s1">(count == </span><span class="s4">11</span><span class="s1">){</span>
+            <span class="s2">return </span><span class="s1">fixedString;</span>
+        <span class="s1">}</span>
+        <span class="s2">if </span><span class="s1">(isalpha(c)) {</span>
+            <span class="s2">if </span><span class="s1">(isFirst) {</span>
+                <span class="s1">fixedString += toupper(c);</span>
+                <span class="s1">isFirst = </span><span class="s2">false</span><span class="s1">;</span>
+            <span class="s1">} </span><span class="s2">else </span><span class="s1">{</span>
+                <span class="s1">fixedString += tolower(c);</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s2">return </span><span class="s1">fixedString;</span>
+<span class="s1">}</span>
+
+<span class="s2">void </span><span class="s1">setText(sf::Text &amp;text, </span><span class="s2">float </span><span class="s1">x, </span><span class="s2">float </span><span class="s1">y){</span>
+    <span class="s1">sf::FloatRect textRect = text.getLocalBounds();</span>
+    <span class="s1">text.setOrigin(textRect.left + textRect.width/</span><span class="s4">2.0f</span><span class="s1">, textRect.top + textRect.height/</span><span class="s4">2.0f</span><span class="s1">);</span>
+    <span class="s1">text.setPosition(sf::Vector2f(x, y));</span>
+
+<span class="s1">}</span>
+
+<span class="s1">map&lt;string, </span><span class="s2">int</span><span class="s1">&gt; config_check(){</span>
+    <span class="s2">int </span><span class="s1">numbers [</span><span class="s4">2</span><span class="s1">];</span>
+    <span class="s1">map&lt;string, </span><span class="s2">int</span><span class="s1">&gt; my_map;</span>
+    <span class="s1">fstream file(</span><span class="s3">&quot;config.cfg&quot;</span><span class="s1">);</span>
+    <span class="s2">if </span><span class="s1">(!file.is_open()) {</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s3">&quot;Failed to open the configuration file.&quot; </span><span class="s1">&lt;&lt; std::endl;</span>
+    <span class="s1">}</span>
+    <span class="s1">string line;</span>
+    <span class="s1">getline(file, line, </span><span class="s3">'</span><span class="s5">\n</span><span class="s3">'</span><span class="s1">);</span>
+        <span class="s2">int </span><span class="s1">numtostore = stoi(line);</span>
+        <span class="s1">my_map[</span><span class="s3">&quot;width&quot;</span><span class="s1">] = numtostore;</span>
+    <span class="s1">getline(file, line, </span><span class="s3">'</span><span class="s5">\n</span><span class="s3">'</span><span class="s1">);</span>
+        <span class="s1">numtostore = stoi(line);</span>
+        <span class="s1">my_map[</span><span class="s3">&quot;height&quot;</span><span class="s1">] = numtostore;</span>
+    <span class="s1">getline(file, line, </span><span class="s3">'</span><span class="s5">\n</span><span class="s3">'</span><span class="s1">);</span>
+        <span class="s1">numtostore = stoi(line);</span>
+        <span class="s1">my_map[</span><span class="s3">&quot;mines&quot;</span><span class="s1">] = numtostore;</span>
+    <span class="s2">return </span><span class="s1">my_map;</span>
+<span class="s1">}</span>
+
+<span class="s1">string erase(string str){</span>
+    <span class="s2">if </span><span class="s1">(str.empty()) {</span>
+        <span class="s2">return </span><span class="s1">str;</span>
+    <span class="s1">} </span><span class="s2">else </span><span class="s1">{</span>
+        <span class="s2">return </span><span class="s1">str.substr(</span><span class="s4">0</span><span class="s1">, str.size() - </span><span class="s4">1</span><span class="s1">);</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s1">string removeCursor(string stran) {</span>
+    <span class="s2">if </span><span class="s1">(!stran.empty() &amp;&amp; stran.back() == </span><span class="s3">'|'</span><span class="s1">) {</span>
+        <span class="s1">stran.pop_back(); </span><span class="s0">// Remove the last character (the cursor bar '|')</span>
+    <span class="s1">}</span>
+    <span class="s2">return </span><span class="s1">stran;</span>
+<span class="s1">}</span>
+
+<span class="s2">int </span><span class="s1">offset_calc(</span><span class="s2">int </span><span class="s1">num){</span>
+    <span class="s2">int </span><span class="s1">offset = </span><span class="s4">21 </span><span class="s1">* num;</span>
+    <span class="s2">return </span><span class="s1">offset;</span>
+<span class="s1">}</span>
+
+
+
+<span class="s2">class </span><span class="s1">LeaderBoard{</span>
+<span class="s2">public</span><span class="s1">:</span>
+    <span class="s1">map&lt;string, string&gt; leaderboard;</span>
+    <span class="s1">LeaderBoard()= </span><span class="s2">default</span><span class="s1">;</span>
+    <span class="s2">void </span><span class="s1">renderwindow(</span><span class="s2">int </span><span class="s1">col, </span><span class="s2">int </span><span class="s1">row, string rawname) {</span>
+        <span class="s2">int </span><span class="s1">width = (col * </span><span class="s4">16</span><span class="s1">) + </span><span class="s4">50</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">height = row * </span><span class="s4">16</span><span class="s1">;</span>
+        <span class="s1">string playername = </span><span class="s3">&quot; &quot; </span><span class="s1">+ rawname;</span>
+        <span class="s1">sf::RenderWindow leaderwindow(sf::VideoMode(width, height), </span><span class="s3">&quot;Minesweeper&quot;</span><span class="s1">, sf::Style::Close);</span>
+        <span class="s1">sf::Font MyFont;</span>
+        <span class="s2">if </span><span class="s1">(!MyFont.loadFromFile(</span><span class="s3">&quot;font.ttf&quot;</span><span class="s1">)) {</span>
+            <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Error loading font&quot; </span><span class="s1">&lt;&lt; endl;</span>
+        <span class="s1">}</span>
+        <span class="s1">string title = </span><span class="s3">&quot;LEADERBOARD&quot;</span><span class="s1">;</span>
+        <span class="s1">sf::Text title_text;</span>
+        <span class="s1">title_text.setString(title);</span>
+        <span class="s1">title_text.setFont(MyFont);</span>
+        <span class="s1">title_text.setCharacterSize(</span><span class="s4">20</span><span class="s1">);</span>
+        <span class="s1">title_text.setFillColor(sf::Color::White);</span>
+        <span class="s1">title_text.setStyle(sf::Text::Bold | sf::Text::Underlined);</span>
+        <span class="s1">setText(title_text, width / </span><span class="s4">2</span><span class="s1">, (height / </span><span class="s4">2</span><span class="s1">) - </span><span class="s4">110</span><span class="s1">);</span>
+
+        <span class="s1">string content;</span>
+        <span class="s1">sf::Text leader_conent;</span>
+        <span class="s1">leader_conent.setFont(MyFont);</span>
+        <span class="s1">leader_conent.setCharacterSize(</span><span class="s4">18</span><span class="s1">);</span>
+        <span class="s1">leader_conent.setFillColor(sf::Color::White);</span>
+        <span class="s1">leader_conent.setStyle(sf::Text::Bold);</span>
+
+
+        <span class="s1">ifstream file(</span><span class="s3">&quot;leaderboard.txt&quot;</span><span class="s1">);</span>
+        <span class="s2">if </span><span class="s1">(!file.is_open()) {</span>
+            <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Failed to open the leaderboard file.&quot; </span><span class="s1">&lt;&lt; std::endl;</span>
+        <span class="s1">}</span>
+        <span class="s1">std::string line;</span>
+        <span class="s2">while </span><span class="s1">(std::getline(file, line)) {</span>
+            <span class="s1">std::istringstream iss(line);</span>
+            <span class="s1">std::string time, name;</span>
+            <span class="s1">std::getline(iss, time, </span><span class="s3">','</span><span class="s1">);</span>
+            <span class="s1">std::getline(iss, name);</span>
+            <span class="s1">leaderboard[time] = name;</span>
+        <span class="s1">}</span>
+        <span class="s1">file.close();</span>
+
+        <span class="s2">int </span><span class="s1">count = </span><span class="s4">1</span><span class="s1">;</span>
+        <span class="s2">for </span><span class="s1">(</span><span class="s2">auto </span><span class="s1">it = leaderboard.begin(); it != leaderboard.end() &amp;&amp; count &lt; </span><span class="s4">6</span><span class="s1">; ++it, ++count) {</span>
+            <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Playername: &quot; </span><span class="s1">&lt;&lt; playername &lt;&lt; </span><span class="s3">&quot; second: &quot; </span><span class="s1">&lt;&lt; it-&gt;second &lt;&lt;endl;</span>
+            <span class="s2">if</span><span class="s1">(playername == it-&gt;second){</span>
+                <span class="s1">std::cout &lt;&lt; </span><span class="s3">&quot;Player: &quot; </span><span class="s1">&lt;&lt; it-&gt;first &lt;&lt; </span><span class="s3">&quot;, Score: &quot; </span><span class="s1">&lt;&lt; it-&gt;second + </span><span class="s3">&quot;*&quot; </span><span class="s1">&lt;&lt; std::endl;</span>
+                <span class="s1">content += to_string(count) + </span><span class="s3">&quot;</span><span class="s5">\t</span><span class="s3">&quot; </span><span class="s1">+ it-&gt;first + </span><span class="s3">&quot;</span><span class="s5">\t</span><span class="s3">&quot; </span><span class="s1">+ it-&gt;second + </span><span class="s3">&quot;*&quot; </span><span class="s1">+ </span><span class="s3">&quot;</span><span class="s5">\n</span><span class="s3">&quot;</span><span class="s1">;</span>
+            <span class="s1">}</span>
+            <span class="s2">else </span><span class="s1">{</span>
+                <span class="s1">std::cout &lt;&lt; </span><span class="s3">&quot;Player: &quot; </span><span class="s1">&lt;&lt; it-&gt;first &lt;&lt; </span><span class="s3">&quot;, Score: &quot; </span><span class="s1">&lt;&lt; it-&gt;second &lt;&lt; std::endl;</span>
+                <span class="s1">content += to_string(count) + </span><span class="s3">&quot;</span><span class="s5">\t</span><span class="s3">&quot; </span><span class="s1">+ it-&gt;first + </span><span class="s3">&quot;</span><span class="s5">\t</span><span class="s3">&quot; </span><span class="s1">+ it-&gt;second + </span><span class="s3">&quot;</span><span class="s5">\n</span><span class="s3">&quot;</span><span class="s1">;</span>
+            <span class="s1">}</span>
+
+        <span class="s1">}</span>
+        <span class="s1">leader_conent.setString(content);</span>
+        <span class="s1">setText(leader_conent, width / </span><span class="s4">2</span><span class="s1">, (height / </span><span class="s4">2</span><span class="s1">) + </span><span class="s4">20</span><span class="s1">);</span>
+
+
+        <span class="s2">while </span><span class="s1">(leaderwindow.isOpen()) {</span>
+
+            <span class="s1">sf::Event event;</span>
+            <span class="s2">while </span><span class="s1">(leaderwindow.pollEvent(event)) {</span>
+                <span class="s2">if </span><span class="s1">(event.type == sf::Event::Closed) {</span>
+                    <span class="s1">leaderwindow.close();</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s1">leaderwindow.clear(sf::Color(</span><span class="s4">0</span><span class="s1">, </span><span class="s4">0</span><span class="s1">, </span><span class="s4">255</span><span class="s1">));</span>
+            <span class="s1">leaderwindow.draw(title_text);</span>
+            <span class="s1">leaderwindow.draw(leader_conent);</span>
+            <span class="s1">leaderwindow.display();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s2">void </span><span class="s1">addscore(string name, string time){</span>
+        <span class="s0">//name += &quot;*&quot;;</span>
+        <span class="s1">ofstream file(</span><span class="s3">&quot;leaderboard.txt&quot;</span><span class="s1">,std::ios::app);</span>
+        <span class="s2">if </span><span class="s1">(!file.is_open()) {</span>
+            <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Failed to open the leaderboard file.&quot; </span><span class="s1">&lt;&lt; std::endl;</span>
+        <span class="s1">}</span>
+        <span class="s2">if </span><span class="s1">(file.tellp() = </span><span class="s4">0</span><span class="s1">)</span>
+            <span class="s1">file &lt;&lt; std::endl;</span>
+        <span class="s1">file &lt;&lt; </span><span class="s3">&quot;</span><span class="s5">\n</span><span class="s3">&quot; </span><span class="s1">&lt;&lt; time &lt;&lt; </span><span class="s3">&quot;, &quot; </span><span class="s1">&lt;&lt; name;</span>
+
+        <span class="s0">// Close the file</span>
+        <span class="s1">file.close();</span>
+    <span class="s1">}</span>
+<span class="s1">};</span>
+
+
+<span class="s2">class </span><span class="s1">Board{</span>
+<span class="s2">public</span><span class="s1">:</span>
+    <span class="s2">int </span><span class="s1">mines;</span>
+
+    <span class="s2">void </span><span class="s1">rendertiles(</span><span class="s2">int </span><span class="s1">collums, </span><span class="s2">int </span><span class="s1">rows, sf::RenderWindow &amp;window){</span>
+        <span class="s1">sf::Sprite tilesprite;</span>
+        <span class="s1">sf::Texture tiletexture;</span>
+        <span class="s1">tiletexture.loadFromFile(</span><span class="s3">&quot;images/tile_revealed.png&quot;</span><span class="s1">);</span>
+        <span class="s1">tilesprite.setTexture(tiletexture);</span>
+        <span class="s2">int </span><span class="s1">x_position = </span><span class="s4">0</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">y_position = </span><span class="s4">0</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">x_offset = </span><span class="s4">32</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">y_offset = </span><span class="s4">32</span><span class="s1">;</span>
+        <span class="s2">for </span><span class="s1">(</span><span class="s2">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; rows; i++){</span>
+            <span class="s2">for</span><span class="s1">(</span><span class="s2">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; collums; j++){</span>
+                <span class="s1">tilesprite.setPosition(x_position, y_position);</span>
+                <span class="s1">window.draw(tilesprite);</span>
+                <span class="s1">x_position += x_offset;</span>
+            <span class="s1">}</span>
+            <span class="s1">y_position += y_offset;</span>
+            <span class="s1">x_position = </span><span class="s4">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+
+    <span class="s1">}</span>
+
+<span class="s1">};</span>
+
+
+
+
+<span class="s2">class </span><span class="s1">Timer {</span>
+<span class="s2">public</span><span class="s1">:</span>
+    <span class="s2">int </span><span class="s1">minutes;</span>
+    <span class="s2">int </span><span class="s1">seconds;</span>
+    <span class="s2">int </span><span class="s1">unconverted_seconds;</span>
+    <span class="s2">bool </span><span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+    <span class="s1">sf::Clock clock;</span>
+    <span class="s1">sf::Clock pauserclock;</span>
+    <span class="s1">sf::Time final_time = sf::Time::Zero;</span>
+    <span class="s1">sf::Time pause_time = sf::Time::Zero;</span>
+
+    <span class="s1">Timer() = </span><span class="s2">default</span><span class="s1">;</span>
+
+    <span class="s2">void </span><span class="s1">update_time() {</span>
+        <span class="s2">if </span><span class="s1">(!paused) {</span>
+            <span class="s1">pause_time;</span>
+            <span class="s1">current_time = clock.getElapsedTime();</span>
+            <span class="s2">if </span><span class="s1">(current_time &gt;= pause_time) {</span>
+                <span class="s1">minutes = (</span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(current_time.asSeconds())) / </span><span class="s4">60</span><span class="s1">;</span>
+                <span class="s1">seconds = (</span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(current_time.asSeconds())) % </span><span class="s4">60</span><span class="s1">;</span>
+            <span class="s1">} </span><span class="s2">else </span><span class="s1">{</span>
+                <span class="s1">final_time = current_time + pause_time;</span>
+                <span class="s1">minutes = (</span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(final_time.asSeconds()))  / </span><span class="s4">60</span><span class="s1">;</span>
+                <span class="s1">seconds = (</span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(final_time.asSeconds())) % </span><span class="s4">60</span><span class="s1">;</span>
+
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">std::string getTimeString() {</span>
+        <span class="s1">std::ostringstream stringtoreturn;</span>
+        <span class="s1">stringtoreturn &lt;&lt; std::setw(</span><span class="s4">2</span><span class="s1">) &lt;&lt; std::setfill(</span><span class="s3">'0'</span><span class="s1">) &lt;&lt; minutes &lt;&lt; </span><span class="s3">&quot;:&quot;</span>
+                       <span class="s1">&lt;&lt; std::setw(</span><span class="s4">2</span><span class="s1">) &lt;&lt; std::setfill(</span><span class="s3">'0'</span><span class="s1">) &lt;&lt; seconds;</span>
+        <span class="s2">return </span><span class="s1">stringtoreturn.str();</span>
+    <span class="s1">}</span>
+
+    <span class="s2">void </span><span class="s1">reset_time() {</span>
+        <span class="s1">clock.restart();</span>
+        <span class="s1">pauserclock.restart();</span>
+        <span class="s1">pause_time = sf::Time::Zero;</span>
+        <span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+        <span class="s1">update_time(); </span><span class="s0">// Update time after resetting</span>
+    <span class="s1">}</span>
+
+    <span class="s2">void </span><span class="s1">pauseTimer() {</span>
+            <span class="s1">paused = </span><span class="s2">true</span><span class="s1">;</span>
+            <span class="s0">//pause_time = clock.getElapsedTime();</span>
+            <span class="s0">//pauserclock.restart();</span>
+            <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;P time: &quot; </span><span class="s1">&lt;&lt; </span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(pause_time.asSeconds())% </span><span class="s4">60</span><span class="s1">&lt;&lt; </span><span class="s3">&quot; currtime: &quot; </span><span class="s1">&lt;&lt; </span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(current_time.asSeconds())% </span><span class="s4">60</span><span class="s1">&lt;&lt; endl;</span>
+            <span class="s2">if </span><span class="s1">(pause_time &lt;= current_time){</span>
+                <span class="s1">pause_time = current_time;</span>
+            <span class="s1">}</span>
+            <span class="s2">else </span><span class="s1">{</span>
+                <span class="s1">pause_time = final_time;</span>
+            <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s2">void </span><span class="s1">unpauseTimer() {</span>
+            <span class="s1">clock.restart();</span>
+        <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;P time: &quot; </span><span class="s1">&lt;&lt; </span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(pause_time.asSeconds())% </span><span class="s4">60</span><span class="s1">&lt;&lt; </span><span class="s3">&quot; currtime: &quot; </span><span class="s1">&lt;&lt; </span><span class="s2">static_cast</span><span class="s1">&lt;</span><span class="s2">int</span><span class="s1">&gt;(current_time.asSeconds())% </span><span class="s4">60</span><span class="s1">&lt;&lt; endl;</span>
+            <span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+<span class="s2">private</span><span class="s1">:</span>
+    <span class="s1">sf::Time current_time = sf::Time::Zero;</span>
+<span class="s1">};</span>
+
+<span class="s2">void </span><span class="s1">rendercounter(</span><span class="s2">int </span><span class="s1">col, </span><span class="s2">int </span><span class="s1">row, sf::RenderWindow &amp;window, </span><span class="s2">int </span><span class="s1">counter){</span>
+    <span class="s2">int </span><span class="s1">digitone, digittwo, digitthree, temp;</span>
+    <span class="s2">bool </span><span class="s1">negative = </span><span class="s2">false</span><span class="s1">;</span>
+    <span class="s0">//999</span>
+    <span class="s0">//12</span>
+    <span class="s2">if</span><span class="s1">(counter &lt; </span><span class="s4">0</span><span class="s1">){</span>
+        <span class="s1">counter *= -</span><span class="s4">1</span><span class="s1">;</span>
+        <span class="s1">negative = </span><span class="s2">true</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s1">digitone = counter / </span><span class="s4">100</span><span class="s1">;</span>
+    <span class="s1">digittwo = (counter / </span><span class="s4">10</span><span class="s1">) % </span><span class="s4">10</span><span class="s1">;</span>
+    <span class="s1">digitthree = counter % </span><span class="s4">10</span><span class="s1">;</span>
+
+
+    <span class="s1">sf::Texture numbers1;</span>
+    <span class="s1">sf::Texture numbers2;</span>
+    <span class="s1">sf::Texture numbers3;</span>
+    <span class="s1">sf::Texture negative_text;</span>
+
+    <span class="s1">sf::Sprite one;</span>
+    <span class="s1">numbers1.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(digitone), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">one.setTexture(numbers1);</span>
+    <span class="s1">sf::Sprite two;</span>
+    <span class="s1">numbers2.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(digittwo), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">two.setTexture(numbers2);</span>
+    <span class="s1">sf::Sprite three;</span>
+    <span class="s1">numbers3.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(digitthree), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">three.setTexture(numbers3);</span>
+    <span class="s1">sf::Sprite negative_nancy;</span>
+    <span class="s1">negative_text.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(</span><span class="s4">10</span><span class="s1">), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">negative_nancy.setTexture(negative_text);</span>
+
+    <span class="s2">int </span><span class="s1">x = </span><span class="s4">33</span><span class="s1">;</span>
+    <span class="s2">int </span><span class="s1">offset = </span><span class="s4">21</span><span class="s1">;</span>
+    <span class="s2">int </span><span class="s1">y = </span><span class="s4">16 </span><span class="s1">+ ((row + </span><span class="s4">0.5</span><span class="s1">) * </span><span class="s4">32</span><span class="s1">);</span>
+    <span class="s1">one.setPosition(x,y);</span>
+    <span class="s1">two.setPosition(x + offset, y);</span>
+    <span class="s1">three.setPosition(x + offset + offset, y);</span>
+    <span class="s1">negative_nancy.setPosition(</span><span class="s4">12</span><span class="s1">, y);</span>
+
+    <span class="s1">window.draw(one);</span>
+    <span class="s1">window.draw(two);</span>
+    <span class="s1">window.draw(three);</span>
+    <span class="s2">if</span><span class="s1">(negative){</span>
+        <span class="s1">window.draw(negative_nancy);</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span>
+
+
+    <span class="s2">void </span><span class="s1">render(</span><span class="s2">int </span><span class="s1">col, </span><span class="s2">int </span><span class="s1">row, sf::RenderWindow &amp;window, Timer &amp;time) {</span>
+        <span class="s0">//make sure u have the right time</span>
+
+        <span class="s1">time.update_time();</span>
+
+        <span class="s0">//define varivables: Minute Top, Minute Bottom, Seconds Top, Seconds Bottom</span>
+        <span class="s2">int </span><span class="s1">mintop, minbot, sectop, secbot;</span>
+        <span class="s0">//Calculate time</span>
+        <span class="s1">mintop = time.minutes / </span><span class="s4">10</span><span class="s1">;</span>
+        <span class="s1">minbot = time.minutes % </span><span class="s4">10</span><span class="s1">;</span>
+        <span class="s1">sectop = time.seconds / </span><span class="s4">10</span><span class="s1">;</span>
+        <span class="s1">secbot = time.seconds % </span><span class="s4">10</span><span class="s1">;</span>
+        <span class="s0">//LINE BELOW FOR TROUBLESHOOTING TIMER</span>
+        <span class="s0">//cout&lt;&lt; mintop &lt;&lt; &quot;&quot; &lt;&lt; minbot &lt;&lt; &quot;:&quot; &lt;&lt; sectop &lt;&lt; &quot;&quot; &lt;&lt; secbot &lt;&lt; endl;</span>
+        <span class="s1">sf::Texture numbers1;</span>
+        <span class="s1">sf::Texture numbers2;</span>
+        <span class="s1">sf::Texture numbers3;</span>
+        <span class="s1">sf::Texture numbers4;</span>
+
+
+        <span class="s1">sf::Sprite twoMins;</span>
+        <span class="s1">numbers1.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(mintop), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+        <span class="s1">twoMins.setTexture(numbers1);</span>
+        <span class="s1">sf::Sprite firstMins;</span>
+        <span class="s1">numbers2.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(minbot), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+        <span class="s1">firstMins.setTexture(numbers2);</span>
+        <span class="s1">sf::Sprite twoSecs;</span>
+        <span class="s1">numbers3.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(sectop), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+        <span class="s1">twoSecs.setTexture(numbers3);</span>
+        <span class="s1">sf::Sprite firstSecs;</span>
+        <span class="s1">numbers4.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(secbot), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+        <span class="s1">firstSecs.setTexture(numbers4);</span>
+
+
+
+
+
+        <span class="s0">//set coordinates to use</span>
+        <span class="s2">int </span><span class="s1">x = (col * </span><span class="s4">32</span><span class="s1">) - </span><span class="s4">97</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">y = </span><span class="s4">16 </span><span class="s1">+ ((row + </span><span class="s4">0.5</span><span class="s1">) * </span><span class="s4">32</span><span class="s1">);</span>
+        <span class="s1">twoMins.setPosition(x, y);</span>
+        <span class="s1">firstMins.setPosition(x + </span><span class="s4">21</span><span class="s1">, y);</span>
+        <span class="s2">int </span><span class="s1">sx = (col * </span><span class="s4">32</span><span class="s1">) - </span><span class="s4">54</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">sy = </span><span class="s4">16 </span><span class="s1">+ ((row + </span><span class="s4">0.5</span><span class="s1">) * </span><span class="s4">32</span><span class="s1">);</span>
+        <span class="s1">twoSecs.setPosition(sx, sy);</span>
+        <span class="s1">firstSecs.setPosition(sx + </span><span class="s4">21</span><span class="s1">, sy);</span>
+
+        <span class="s1">window.draw(twoMins);</span>
+        <span class="s1">window.draw(firstMins);</span>
+        <span class="s1">window.draw(twoSecs);</span>
+        <span class="s1">window.draw(firstSecs);</span>
+
+    <span class="s1">}</span>
+
+
+<span class="s2">void </span><span class="s1">renderwithoutop(</span><span class="s2">int </span><span class="s1">col, </span><span class="s2">int </span><span class="s1">row, sf::RenderWindow &amp;window, Timer &amp;time){</span>
+    <span class="s0">//make sure u have the right time</span>
+
+    <span class="s0">//time.update_time();</span>
+
+    <span class="s0">//define varivables: Minute Top, Minute Bottom, Seconds Top, Seconds Bottom</span>
+    <span class="s2">int </span><span class="s1">mintop, minbot, sectop, secbot;</span>
+    <span class="s0">//Calculate time</span>
+    <span class="s1">mintop = time.minutes / </span><span class="s4">10</span><span class="s1">;</span>
+    <span class="s1">minbot = time.minutes % </span><span class="s4">10</span><span class="s1">;</span>
+    <span class="s1">sectop = time.seconds / </span><span class="s4">10</span><span class="s1">;</span>
+    <span class="s1">secbot = time.seconds % </span><span class="s4">10</span><span class="s1">;</span>
+    <span class="s0">//LINE BELOW FOR TROUBLESHOOTING TIMER</span>
+    <span class="s0">//cout&lt;&lt; mintop &lt;&lt; &quot;&quot; &lt;&lt; minbot &lt;&lt; &quot;:&quot; &lt;&lt; sectop &lt;&lt; &quot;&quot; &lt;&lt; secbot &lt;&lt; endl;</span>
+    <span class="s1">sf::Texture numbers1;</span>
+    <span class="s1">sf::Texture numbers2;</span>
+    <span class="s1">sf::Texture numbers3;</span>
+    <span class="s1">sf::Texture numbers4;</span>
+
+
+    <span class="s1">sf::Sprite twoMins;</span>
+    <span class="s1">numbers1.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(mintop), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">twoMins.setTexture(numbers1);</span>
+    <span class="s1">sf::Sprite firstMins;</span>
+    <span class="s1">numbers2.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(minbot), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">firstMins.setTexture(numbers2);</span>
+    <span class="s1">sf::Sprite twoSecs;</span>
+    <span class="s1">numbers3.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(sectop), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">twoSecs.setTexture(numbers3);</span>
+    <span class="s1">sf::Sprite firstSecs;</span>
+    <span class="s1">numbers4.loadFromFile(</span><span class="s3">&quot;images/digits.png&quot;</span><span class="s1">, sf::IntRect(offset_calc(secbot), </span><span class="s4">0</span><span class="s1">, </span><span class="s4">21</span><span class="s1">, </span><span class="s4">32</span><span class="s1">));</span>
+    <span class="s1">firstSecs.setTexture(numbers4);</span>
+
+
+
+
+
+    <span class="s0">//set coordinates to use</span>
+    <span class="s2">int </span><span class="s1">x = (col * </span><span class="s4">32</span><span class="s1">) - </span><span class="s4">97</span><span class="s1">;</span>
+    <span class="s2">int </span><span class="s1">y = </span><span class="s4">16 </span><span class="s1">+ ((row + </span><span class="s4">0.5</span><span class="s1">) * </span><span class="s4">32</span><span class="s1">);</span>
+    <span class="s1">twoMins.setPosition(x,y);</span>
+    <span class="s1">firstMins.setPosition(x + </span><span class="s4">21</span><span class="s1">, y);</span>
+    <span class="s2">int </span><span class="s1">sx = (col * </span><span class="s4">32</span><span class="s1">) - </span><span class="s4">54</span><span class="s1">;</span>
+    <span class="s2">int </span><span class="s1">sy = </span><span class="s4">16 </span><span class="s1">+  ((row + </span><span class="s4">0.5</span><span class="s1">) * </span><span class="s4">32 </span><span class="s1">);</span>
+    <span class="s1">twoSecs.setPosition(sx, sy);</span>
+    <span class="s1">firstSecs.setPosition(sx + </span><span class="s4">21</span><span class="s1">, sy);</span>
+
+    <span class="s1">window.draw(twoMins);</span>
+    <span class="s1">window.draw(firstMins);</span>
+    <span class="s1">window.draw(twoSecs);</span>
+    <span class="s1">window.draw(firstSecs);</span>
+
+<span class="s1">}</span>
+
+
+
+
+
+<span class="s2">class </span><span class="s1">game_window{</span>
+<span class="s2">private</span><span class="s1">:</span>
+    <span class="s0">//base tile</span>
+    <span class="s1">sf::Sprite tilesprite;</span>
+        <span class="s1">sf::Texture tiletexture;</span>
+    <span class="s0">//timer</span>
+        <span class="s0">//minutes</span>
+        <span class="s0">//seconds</span>
+
+    <span class="s0">//counter</span>
+
+    <span class="s0">//faces</span>
+    <span class="s1">sf::Sprite face_sprite;</span>
+        <span class="s1">sf::Texture happy_face_texture;</span>
+        <span class="s1">sf::Texture win_face_texture;</span>
+        <span class="s1">sf::Texture lose_face_texture;</span>
+
+
+    <span class="s0">//pause play button</span>
+    <span class="s1">sf::Sprite playpause_button_sprite;</span>
+        <span class="s1">sf::Texture pause_texture;</span>
+        <span class="s1">sf::Texture play_texture;</span>
+
+    <span class="s0">//debug button</span>
+    <span class="s1">sf::Sprite debug_button_sprite;</span>
+        <span class="s1">sf::Texture debug_texture;</span>
+
+    <span class="s0">//leaderboard</span>
+    <span class="s1">sf::Sprite leaderboard_sprite;</span>
+        <span class="s1">sf::Texture leaderboard_texture;</span>
+
+    <span class="s1">LeaderBoard gameLeaderBoard;</span>
+
+    <span class="s1">sf::Texture t_hidden_tile;</span>
+    <span class="s1">sf::Texture t_revealed_tile;</span>
+    <span class="s1">sf::Texture t_flag;</span>
+    <span class="s1">sf::Texture t_mine;</span>
+    <span class="s1">sf::Sprite hidden_tile;</span>
+    <span class="s1">sf::Sprite revealed_tile;</span>
+    <span class="s1">sf::Sprite flag;</span>
+    <span class="s1">sf::Sprite mine;</span>
+    <span class="s1">sf::Texture t_one, t_two, t_three, t_four, t_five, t_six, t_seven, t_eight;</span>
+    <span class="s1">sf::Sprite one, two, three, four, five, six, seven, eight;</span>
+    <span class="s1">vector&lt;sf::Sprite&gt; numbers;</span>
+
+<span class="s2">public</span><span class="s1">:</span>
+    <span class="s2">void </span><span class="s1">sprite_loader(){</span>
+        <span class="s0">//tile loading</span>
+        <span class="s1">tiletexture.loadFromFile(</span><span class="s3">&quot;images/tile_hidden.png&quot;</span><span class="s1">);</span>
+        <span class="s1">tilesprite.setTexture(tiletexture);</span>
+        <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;ILOADED&quot; </span><span class="s1">&lt;&lt; endl;</span>
+        <span class="s0">//clock loading</span>
+        <span class="s0">//timer loading</span>
+        <span class="s0">//faces loading</span>
+        <span class="s1">happy_face_texture.loadFromFile(</span><span class="s3">&quot;images/face_happy.png&quot;</span><span class="s1">);</span>
+        <span class="s1">win_face_texture.loadFromFile(</span><span class="s3">&quot;images/face_win.png&quot;</span><span class="s1">);</span>
+        <span class="s1">lose_face_texture.loadFromFile(</span><span class="s3">&quot;images/face_lose.png&quot;</span><span class="s1">);</span>
+        <span class="s1">face_sprite.setTexture(happy_face_texture);</span>
+
+        <span class="s0">//play pause loading</span>
+        <span class="s1">pause_texture.loadFromFile(</span><span class="s3">&quot;images/pause.png&quot;</span><span class="s1">);</span>
+        <span class="s1">play_texture.loadFromFile(</span><span class="s3">&quot;images/play.png&quot;</span><span class="s1">);</span>
+        <span class="s1">playpause_button_sprite.setTexture(pause_texture);</span>
+        <span class="s0">//debug loading</span>
+        <span class="s1">debug_texture.loadFromFile(</span><span class="s3">&quot;images/debug.png&quot;</span><span class="s1">);</span>
+        <span class="s1">debug_button_sprite.setTexture(debug_texture);</span>
+        <span class="s0">//leaderboard laoding</span>
+        <span class="s1">leaderboard_texture.loadFromFile(</span><span class="s3">&quot;images/leaderboard.png&quot;</span><span class="s1">);</span>
+        <span class="s1">leaderboard_sprite.setTexture(leaderboard_texture);</span>
+
+        <span class="s1">t_hidden_tile.loadFromFile(</span><span class="s3">&quot;images/tile_hidden.png&quot;</span><span class="s1">);</span>
+        <span class="s1">hidden_tile.setTexture(t_hidden_tile);</span>
+        <span class="s1">t_revealed_tile.loadFromFile(</span><span class="s3">&quot;images/tile_revealed.png&quot;</span><span class="s1">);</span>
+        <span class="s1">revealed_tile.setTexture(t_revealed_tile);</span>
+        <span class="s1">t_flag.loadFromFile(</span><span class="s3">&quot;images/flag.png&quot;</span><span class="s1">);</span>
+        <span class="s1">flag.setTexture(t_flag);</span>
+        <span class="s1">t_mine.loadFromFile(</span><span class="s3">&quot;images/mine.png&quot;</span><span class="s1">);</span>
+        <span class="s1">mine.setTexture(t_mine);</span>
+
+        <span class="s1">t_one.loadFromFile(</span><span class="s3">&quot;images/number_1.png&quot;</span><span class="s1">);</span>
+        <span class="s1">one.setTexture(t_one);</span>
+        <span class="s1">numbers.push_back(one);</span>
+        <span class="s1">t_two.loadFromFile(</span><span class="s3">&quot;images/number_2.png&quot;</span><span class="s1">);</span>
+        <span class="s1">two.setTexture(t_two);</span>
+        <span class="s1">numbers.push_back(two);</span>
+        <span class="s1">t_three.loadFromFile(</span><span class="s3">&quot;images/number_3.png&quot;</span><span class="s1">);</span>
+        <span class="s1">three.setTexture(t_three);</span>
+        <span class="s1">numbers.push_back(three);</span>
+        <span class="s1">t_four.loadFromFile(</span><span class="s3">&quot;images/number_4.png&quot;</span><span class="s1">);</span>
+        <span class="s1">four.setTexture(t_four);</span>
+        <span class="s1">numbers.push_back(four);</span>
+        <span class="s1">t_five.loadFromFile(</span><span class="s3">&quot;images/number_5.png&quot;</span><span class="s1">);</span>
+        <span class="s1">five.setTexture(t_five);</span>
+        <span class="s1">numbers.push_back(five);</span>
+        <span class="s1">t_six.loadFromFile(</span><span class="s3">&quot;images/number_6.png&quot;</span><span class="s1">);</span>
+        <span class="s1">six.setTexture(t_six);</span>
+        <span class="s1">numbers.push_back(six);</span>
+        <span class="s1">t_seven.loadFromFile(</span><span class="s3">&quot;images/number_7.png&quot;</span><span class="s1">);</span>
+        <span class="s1">seven.setTexture(t_seven);</span>
+        <span class="s1">numbers.push_back(seven);</span>
+        <span class="s1">t_eight.loadFromFile(</span><span class="s3">&quot;images/number_8.png&quot;</span><span class="s1">);</span>
+        <span class="s1">eight.setTexture(t_eight);</span>
+        <span class="s1">numbers.push_back(eight);</span>
+
+
+
+
+
+    <span class="s1">}</span>
+
+
+
+
+    <span class="s2">void </span><span class="s1">renderwindow(</span><span class="s2">int </span><span class="s1">collums, </span><span class="s2">int </span><span class="s1">rows, </span><span class="s2">int </span><span class="s1">mines, string name){</span>
+        <span class="s2">int </span><span class="s1">width = collums * </span><span class="s4">32</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">height = </span><span class="s4">100 </span><span class="s1">+ (rows * </span><span class="s4">32</span><span class="s1">);</span>
+
+        <span class="s1">face_sprite.setPosition((((collums / </span><span class="s4">2.0</span><span class="s1">) * </span><span class="s4">32 </span><span class="s1">) - </span><span class="s4">32 </span><span class="s1">)    ,   (</span><span class="s4">32 </span><span class="s1">* (rows + </span><span class="s4">0.5</span><span class="s1">)) );</span>
+        <span class="s1">debug_button_sprite.setPosition( ((collums * </span><span class="s4">32</span><span class="s1">) - </span><span class="s4">304 </span><span class="s1">), (</span><span class="s4">32 </span><span class="s1">* (rows + </span><span class="s4">0.5</span><span class="s1">)) );</span>
+        <span class="s1">playpause_button_sprite.setPosition( (  (collums * </span><span class="s4">32</span><span class="s1">) - </span><span class="s4">240</span><span class="s1">)  , (</span><span class="s4">32 </span><span class="s1">*(rows + </span><span class="s4">0.5</span><span class="s1">)) );</span>
+        <span class="s1">leaderboard_sprite.setPosition((  (collums * </span><span class="s4">32</span><span class="s1">) - </span><span class="s4">176</span><span class="s1">) , (</span><span class="s4">32 </span><span class="s1">*(rows + </span><span class="s4">0.5</span><span class="s1">)) );</span>
+
+
+        <span class="s1">sf::RenderWindow game_window(sf::VideoMode(width, height), </span><span class="s3">&quot;Game Window&quot;</span><span class="s1">, sf::Style::Close);</span>
+        <span class="s1">Board gameboard;</span>
+        <span class="s1">Timer testTimer;</span>
+        <span class="s2">int </span><span class="s1">wincount = </span><span class="s4">0</span><span class="s1">;</span>
+        <span class="s2">bool </span><span class="s1">wincondition = </span><span class="s2">false</span><span class="s1">;</span>
+        <span class="s2">bool </span><span class="s1">lose = </span><span class="s2">false</span><span class="s1">;</span>
+        <span class="s2">bool </span><span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+        <span class="s2">bool </span><span class="s1">debug = </span><span class="s2">false</span><span class="s1">;</span>
+        <span class="s2">bool </span><span class="s1">reset = </span><span class="s2">false</span><span class="s1">;</span>
+        <span class="s2">int </span><span class="s1">flag_counter = mines;</span>
+        <span class="s2">int </span><span class="s1">revealed_nonmines = </span><span class="s4">0</span><span class="s1">;</span>
+
+        <span class="s1">vector&lt;vector&lt;Tile&gt;&gt; game_tiles = initialize(collums, rows, mines);</span>
+
+
+
+
+        <span class="s0">//go inside the loop</span>
+        <span class="s0">//game_window.clear(sf::Color(255, 255, 255));</span>
+        <span class="s2">while </span><span class="s1">(game_window.isOpen()) {</span>
+            <span class="s0">//closing and clicking event</span>
+
+
+            <span class="s1">sf::Event event;</span>
+            <span class="s2">while </span><span class="s1">(game_window.pollEvent(event)) {</span>
+                <span class="s2">if</span><span class="s1">( lose || wincondition) {</span>
+                    <span class="s1">reset = </span><span class="s2">true</span><span class="s1">;</span>
+                    <span class="s0">//wincount = 0;</span>
+                    <span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+                    <span class="s1">debug = </span><span class="s2">true</span><span class="s1">;</span>
+                    <span class="s0">//flag_counter = mines;</span>
+                    <span class="s2">if </span><span class="s1">(event.type == sf::Event::Closed) {</span>
+                        <span class="s1">game_window.close();</span>
+                    <span class="s1">} </span><span class="s2">else if </span><span class="s1">(event.type == sf::Event::MouseButtonPressed) {</span>
+                        <span class="s0">// Check if the left mouse button was pressed</span>
+                        <span class="s2">if </span><span class="s1">(event.mouseButton.button == sf::Mouse::Left) {</span>
+                            <span class="s0">// Get the position of the mouse click</span>
+                            <span class="s1">sf::Vector2i mousePosition = sf::Mouse::getPosition(game_window);</span>
+
+                            <span class="s0">// Check if the mouse click is within the bounds of the leaderboard button</span>
+                            <span class="s2">if </span><span class="s1">(leaderboard_sprite.getGlobalBounds().contains(sf::Vector2f(mousePosition))) {</span>
+                                <span class="s1">gameLeaderBoard.renderwindow(collums, rows, name);</span>
+                            <span class="s1">}</span>
+                            <span class="s2">if </span><span class="s1">(face_sprite.getGlobalBounds().contains(sf::Vector2f(mousePosition))) {</span>
+                                <span class="s1">face_sprite.setTexture(happy_face_texture);</span>
+                                <span class="s1">game_tiles = initialize(collums, rows, mines);</span>
+                                <span class="s1">testTimer.reset_time();</span>
+                                <span class="s1">wincount = </span><span class="s4">0</span><span class="s1">;</span>
+                                <span class="s1">lose = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s1">wincondition = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s1">reset = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s2">int </span><span class="s1">revealed_nonmines = </span><span class="s4">0</span><span class="s1">;</span>
+
+                            <span class="s1">}</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+
+                <span class="s2">if </span><span class="s1">(event.type == sf::Event::Closed) {</span>
+                    <span class="s1">game_window.close();</span>
+                <span class="s1">} </span><span class="s2">else if </span><span class="s1">(event.type == sf::Event::MouseButtonPressed) {</span>
+                    <span class="s0">// Check if the left mouse button was pressed</span>
+                    <span class="s2">if</span><span class="s1">(!reset) {</span>
+                        <span class="s2">if </span><span class="s1">(event.mouseButton.button == sf::Mouse::Left) {</span>
+                            <span class="s0">// Get the position of the mouse click</span>
+                            <span class="s1">sf::Vector2i mousePosition = sf::Mouse::getPosition(game_window);</span>
+
+                            <span class="s0">// Check if the mouse click is within the bounds of the leaderboard button</span>
+                            <span class="s2">if </span><span class="s1">(leaderboard_sprite.getGlobalBounds().contains(sf::Vector2f(mousePosition))) {</span>
+                                <span class="s0">// Handle the click on the leaderboard button</span>
+                                <span class="s0">// For example, display the leaderboard or perform any other action</span>
+                                <span class="s0">//std::cout &lt;&lt; &quot;Leaderboard button clicked!&quot; &lt;&lt; std::endl;</span>
+                                <span class="s2">if</span><span class="s1">(!paused){</span>
+                                    <span class="s1">testTimer.pauseTimer();</span>
+                                    <span class="s1">playpause_button_sprite.setTexture(play_texture);</span>
+                                    <span class="s1">paused = </span><span class="s2">true</span><span class="s1">;</span>
+                                    <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Pause&quot; </span><span class="s1">&lt;&lt; endl;</span>
+                                    <span class="s1">gameboard.rendertiles(collums, rows, game_window);</span>
+                                    <span class="s1">game_window.display();</span>
+                                    <span class="s1">gameLeaderBoard.renderwindow(collums, rows, name);</span>
+                                    <span class="s1">testTimer.unpauseTimer();</span>
+                                    <span class="s1">playpause_button_sprite.setTexture(pause_texture);</span>
+                                    <span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+                                    <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Unpause&quot; </span><span class="s1">&lt;&lt; endl;</span>
+                                <span class="s1">}</span>
+                                <span class="s2">else</span><span class="s1">{</span>
+                                    <span class="s1">gameLeaderBoard.renderwindow(collums, rows, name);</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+                            <span class="s2">if </span><span class="s1">(face_sprite.getGlobalBounds().contains(sf::Vector2f(mousePosition))) {</span>
+                                <span class="s1">game_tiles = initialize(collums, rows, mines);</span>
+                                <span class="s1">testTimer.reset_time();</span>
+                                <span class="s1">wincount = </span><span class="s4">0</span><span class="s1">;</span>
+                                <span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s1">debug = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s1">flag_counter = mines;</span>
+                                <span class="s1">lose = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s1">wincondition = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s1">reset = </span><span class="s2">false</span><span class="s1">;</span>
+                                <span class="s1">face_sprite.setTexture(happy_face_texture);</span>
+                            <span class="s1">}</span>
+                            <span class="s2">if </span><span class="s1">(debug_button_sprite.getGlobalBounds().contains(sf::Vector2f(mousePosition))) {</span>
+                                <span class="s1">debug = !debug;</span>
+                            <span class="s1">}</span>
+                            <span class="s2">if </span><span class="s1">(playpause_button_sprite.getGlobalBounds().contains(sf::Vector2f(mousePosition))) {</span>
+                                <span class="s2">if </span><span class="s1">(paused) {</span>
+                                    <span class="s1">testTimer.unpauseTimer();</span>
+                                    <span class="s1">playpause_button_sprite.setTexture(pause_texture);</span>
+                                    <span class="s1">paused = </span><span class="s2">false</span><span class="s1">;</span>
+                                    <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Unpause&quot; </span><span class="s1">&lt;&lt; endl;</span>
+                                <span class="s1">} </span><span class="s2">else </span><span class="s1">{</span>
+                                    <span class="s1">testTimer.pauseTimer();</span>
+                                    <span class="s1">playpause_button_sprite.setTexture(play_texture);</span>
+                                    <span class="s1">paused = </span><span class="s2">true</span><span class="s1">;</span>
+                                    <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;Pause&quot; </span><span class="s1">&lt;&lt; endl;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">} </span><span class="s2">else </span><span class="s1">{</span>
+                                <span class="s2">int </span><span class="s1">clicked_col = mousePosition.x / </span><span class="s4">32</span><span class="s1">;</span>
+                                <span class="s2">int </span><span class="s1">clicked_row = mousePosition.y / </span><span class="s4">32</span><span class="s1">;</span>
+                                <span class="s2">if </span><span class="s1">(clicked_row &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp; clicked_row &lt; rows &amp;&amp; clicked_col &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp;</span>
+                                    <span class="s1">clicked_col &lt; collums) {</span>
+                                    <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;X:&quot; </span><span class="s1">&lt;&lt; clicked_col &lt;&lt; </span><span class="s3">&quot; Y:&quot; </span><span class="s1">&lt;&lt; clicked_row &lt;&lt; endl;</span>
+                                    <span class="s2">if </span><span class="s1">(!game_tiles[clicked_row][clicked_col].is_revealed) {</span>
+                                        <span class="s1">revealAdjacentTiles(clicked_row, clicked_col, game_tiles, rows, collums);</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+
+                        <span class="s1">}</span>
+                        <span class="s2">if </span><span class="s1">(event.mouseButton.button == sf::Mouse::Right) {</span>
+                            <span class="s1">sf::Vector2i mousePosition = sf::Mouse::getPosition(game_window);</span>
+                            <span class="s2">int </span><span class="s1">clicked_col = mousePosition.x / </span><span class="s4">32</span><span class="s1">;</span>
+                            <span class="s2">int </span><span class="s1">clicked_row = mousePosition.y / </span><span class="s4">32</span><span class="s1">;</span>
+                            <span class="s2">if </span><span class="s1">(clicked_row &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp; clicked_row &lt; rows &amp;&amp; clicked_col &gt;= </span><span class="s4">0 </span><span class="s1">&amp;&amp; clicked_col &lt; collums) {</span>
+                                <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;X:&quot; </span><span class="s1">&lt;&lt; clicked_col &lt;&lt; </span><span class="s3">&quot; Y:&quot; </span><span class="s1">&lt;&lt; clicked_row &lt;&lt; endl;</span>
+                                <span class="s2">if </span><span class="s1">(!game_tiles[clicked_row][clicked_col].is_flagged) {</span>
+                                    <span class="s1">game_tiles[clicked_row][clicked_col].is_flagged = </span><span class="s2">true</span><span class="s1">;</span>
+                                    <span class="s1">flag_counter--;</span>
+                                    <span class="s0">//cout &lt;&lt; &quot;FLAGED&quot;;</span>
+                                <span class="s1">} </span><span class="s2">else </span><span class="s1">{</span>
+                                    <span class="s1">game_tiles[clicked_row][clicked_col].is_flagged = </span><span class="s2">false</span><span class="s1">;</span>
+                                    <span class="s1">flag_counter++;</span>
+                                    <span class="s0">//cout &lt;&lt; &quot;FLAGED&quot;;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s2">if</span><span class="s1">(wincheck(game_tiles, collums, rows, mines, flag_counter)){</span>
+                <span class="s1">face_sprite.setTexture(win_face_texture);</span>
+                <span class="s1">wincondition = </span><span class="s2">true</span><span class="s1">;</span>
+                <span class="s0">//cout &lt;&lt; &quot;WIN&quot; &lt;&lt; endl;</span>
+                <span class="s0">//needs to repeat ONCE</span>
+                <span class="s2">if </span><span class="s1">(wincount == </span><span class="s4">0</span><span class="s1">) {</span>
+                    <span class="s1">gameLeaderBoard.addscore(name, testTimer.getTimeString());</span>
+                    <span class="s1">cout &lt;&lt; </span><span class="s3">&quot;WIN&quot; </span><span class="s1">&lt;&lt; endl;</span>
+                <span class="s1">}</span>
+                <span class="s1">wincount++;</span>
+            <span class="s1">}</span>
+
+
+
+
+
+
+<span class="s0">//</span>
+
+            <span class="s1">game_window.clear(sf::Color(</span><span class="s4">255</span><span class="s1">, </span><span class="s4">255</span><span class="s1">, </span><span class="s4">255</span><span class="s1">));</span>
+            <span class="s0">//display tiles</span>
+            <span class="s2">int </span><span class="s1">x_position = </span><span class="s4">0</span><span class="s1">;</span>
+            <span class="s2">int </span><span class="s1">y_position = </span><span class="s4">0</span><span class="s1">;</span>
+            <span class="s2">int </span><span class="s1">x_offset = </span><span class="s4">32</span><span class="s1">;</span>
+            <span class="s2">int </span><span class="s1">y_offset = </span><span class="s4">32</span><span class="s1">;</span>
+            <span class="s2">for </span><span class="s1">(</span><span class="s2">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; rows; i++){</span>
+                <span class="s2">for</span><span class="s1">(</span><span class="s2">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; collums; j++){</span>
+                    <span class="s0">//ORDER</span>
+                        <span class="s0">//Mines</span>
+                        <span class="s0">//flags</span>
+                        <span class="s0">//tiles</span>
+                        <span class="s2">if</span><span class="s1">(game_tiles[i][j].is_revealed){</span>
+                            <span class="s0">//draw revealed tile</span>
+
+                            <span class="s1">revealed_tile.setPosition(x_position, y_position);</span>
+                            <span class="s1">game_window.draw(revealed_tile);</span>
+                            <span class="s2">if</span><span class="s1">(!game_tiles[i][j].neighbor_mines == </span><span class="s4">0</span><span class="s1">) {</span>
+                                <span class="s1">numbers[game_tiles[i][j].neighbor_mines - </span><span class="s4">1</span><span class="s1">].setPosition(x_position, y_position);</span>
+                                <span class="s1">game_window.draw(numbers[game_tiles[i][j].neighbor_mines - </span><span class="s4">1</span><span class="s1">]);</span>
+                            <span class="s1">}</span>
+
+                        <span class="s1">} </span><span class="s2">else</span><span class="s1">{</span>
+                            <span class="s0">//draw hidden tile</span>
+                            <span class="s1">hidden_tile.setPosition(x_position, y_position);</span>
+                            <span class="s1">game_window.draw(hidden_tile);</span>
+                        <span class="s1">}</span>
+                    <span class="s2">if</span><span class="s1">(game_tiles[i][j].is_flagged){</span>
+                        <span class="s0">//draw flag</span>
+                        <span class="s0">//cout &lt;&lt; &quot;FLAGED&quot;;</span>
+                        <span class="s1">flag.setPosition(x_position, y_position);</span>
+                        <span class="s1">game_window.draw(flag);</span>
+                    <span class="s1">}</span>
+                    <span class="s2">if</span><span class="s1">(game_tiles[i][j].is_mine &amp;&amp; game_tiles[i][j].is_revealed){</span>
+                        <span class="s0">//draw mine AND IS REVEALED</span>
+                        <span class="s1">lose = </span><span class="s2">true</span><span class="s1">;</span>
+                        <span class="s1">face_sprite.setTexture(lose_face_texture);</span>
+                        <span class="s1">mine.setPosition(x_position, y_position);</span>
+                        <span class="s1">game_window.draw(mine);</span>
+                        <span class="s2">int </span><span class="s1">x_positionk = </span><span class="s4">0</span><span class="s1">;</span>
+                        <span class="s2">int </span><span class="s1">y_positionk = </span><span class="s4">0</span><span class="s1">;</span>
+                        <span class="s2">int </span><span class="s1">x_offsetk = </span><span class="s4">32</span><span class="s1">;</span>
+                        <span class="s2">int </span><span class="s1">y_offsetk = </span><span class="s4">32</span><span class="s1">;</span>
+                        <span class="s2">for </span><span class="s1">(</span><span class="s2">int </span><span class="s1">ik = </span><span class="s4">0</span><span class="s1">; ik &lt; rows; ik++){</span>
+                            <span class="s2">for</span><span class="s1">(</span><span class="s2">int </span><span class="s1">jk = </span><span class="s4">0</span><span class="s1">; jk &lt; collums; jk++){</span>
+                                <span class="s2">if</span><span class="s1">(game_tiles[ik][jk].is_mine){</span>
+                                    <span class="s1">mine.setPosition(x_positionk, y_positionk);</span>
+                                    <span class="s1">game_window.draw(mine);</span>
+                                <span class="s1">}</span>
+                                    <span class="s1">x_positionk += x_offsetk;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">x_positionk = </span><span class="s4">0</span><span class="s1">;</span>
+                            <span class="s1">y_positionk += y_offsetk;</span>
+                            <span class="s1">}</span>
+
+                        <span class="s0">//gameover;</span>
+
+                    <span class="s1">}</span>
+                    <span class="s2">if</span><span class="s1">(game_tiles[i][j].is_mine &amp;&amp; debug){</span>
+                        <span class="s1">mine.setPosition(x_position, y_position);</span>
+                        <span class="s1">game_window.draw(mine);</span>
+                    <span class="s1">}</span>
+
+                    <span class="s1">x_position += x_offset;</span>
+                <span class="s1">}</span>
+                <span class="s1">y_position += y_offset;</span>
+                <span class="s1">x_position = </span><span class="s4">0</span><span class="s1">;</span>
+            <span class="s1">}</span>
+
+
+
+
+            <span class="s1">game_window.draw(face_sprite);</span>
+            <span class="s1">game_window.draw(debug_button_sprite);</span>
+            <span class="s1">game_window.draw(playpause_button_sprite);</span>
+            <span class="s1">game_window.draw(leaderboard_sprite);</span>
+            <span class="s0">//renders tiles</span>
+            <span class="s2">if</span><span class="s1">(paused) {</span>
+                <span class="s1">gameboard.rendertiles(collums, rows, game_window);</span>
+            <span class="s1">}</span>
+            <span class="s0">//renders timer</span>
+            <span class="s2">if </span><span class="s1">(!reset){</span>
+                <span class="s1">render(collums, rows, game_window, testTimer);</span>
+            <span class="s1">}</span>
+            <span class="s2">else</span><span class="s1">{</span>
+                <span class="s1">renderwithoutop(collums, rows, game_window, testTimer);</span>
+            <span class="s1">}</span>
+            <span class="s1">rendercounter(collums, rows, game_window, flag_counter);</span>
+
+            <span class="s1">game_window.display();</span>
+
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+<span class="s1">};</span>
+
+
+
+</pre>
+</body>
+</html>

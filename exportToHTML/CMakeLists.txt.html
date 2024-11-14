@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>CMakeLists.txt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #ffc66d;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #bbbbbb;}
+.s3 { color: #5c6370; font-style: italic;}
+.s4 { color: #89ca78;}
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+CMakeLists.txt</font>
+</center></td></tr></table>
+<pre><span class="s0">cmake_minimum_required</span><span class="s1">(</span><span class="s2">VERSION 3.2</span><span class="s1">)</span>
+<span class="s0">set</span><span class="s1">(</span><span class="s2">CMAKE_CXX_STANDARD 11</span><span class="s1">)</span>
+<span class="s0">set</span><span class="s1">(</span><span class="s2">CMAKE_CXX_STANDARD_REQUIRED ON</span><span class="s1">)</span>
+
+<span class="s0">project</span><span class="s1">(</span><span class="s2">Minesweeper</span><span class="s1">)</span>
+
+<span class="s3">## If you want to link SFML statically</span>
+<span class="s3"># set(SFML_STATIC_LIBRARIES TRUE)</span>
+
+<span class="s3">## In most cases better set in the CMake cache</span>
+<span class="s0">set</span><span class="s1">(</span><span class="s2">SFML_DIR </span><span class="s4">&quot;</span><span class="s2">C:/Users/Gabriel/Downloads/SFML-2.5.1-windows-gcc-7.3.0-mingw-64-bit/SFML-2.5.1/lib/cmake/SFML</span><span class="s4">&quot;</span><span class="s1">)</span>
+
+<span class="s0">find_package</span><span class="s1">(</span><span class="s2">SFML 2.5.1 COMPONENTS system window graphics audio REQUIRED</span><span class="s1">)</span>
+<span class="s0">add_executable</span><span class="s1">(</span><span class="s2">Minesweeper main.cpp</span>
+        <span class="s2">functions.h</span>
+        <span class="s2">tileandmines.h</span><span class="s1">)</span>
+<span class="s0">target_link_libraries</span><span class="s1">(</span><span class="s2">Minesweeper sfml-system sfml-window sfml-graphics sfml-audio</span><span class="s1">)</span></pre>
+</body>
+</html>
